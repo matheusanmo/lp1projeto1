@@ -14,9 +14,6 @@ using std::ifstream;
 #include <sstream>
 using std::stringstream;
 
-// TODO const nos paramtros de funcoes
-const int    DEFAULT_NCHECK_NUM        = 3;
-const string DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
 
 struct Config {
     int    error; // codigo de erro caso programa seja mal invocado. 0 = tudo ok
@@ -25,14 +22,37 @@ struct Config {
     string input_puzzle_file;
 };
 
-struct GameTable {
+struct PuzzleTable {
     int table[9][9];
 };
 
-struct GameTables {
+struct PuzzleTables {
     int  tablecount;
-    GameTable* tables;
+    PuzzleTable* tables;
 };
+
+struct PlayState {
+    int         puzzle_index;
+    int         checks_used;
+    PuzzleTable input_table; /** contem os digitos escritos pelo usuario. 0=nenhum input do usuario */
+    int         last_move_pos[2]; /** posicao (linha, coluna) da ultima jogada. */
+    int         last_move_input;  /** ultimo digito inserido. -1 quer dizer que um digito foi apagado */ 
+    bool        has_last_move;   /** alguma jogada ja foi realizada para falar-se da utima jogada? */
+};
+
+struct GameState {
+    Config       config;
+    int          chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
+    PuzzleTables puzzletables;
+    PlayState    playstate;
+};
+
+// TODO const nos paramtros de funcoes
+const int         DEFAULT_NCHECK_NUM        = 3;
+const string      DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
+const PuzzleTable empty_table{};
+
+
 
 /**
  * recebe string que deve ser caminho de um arquivo. checa se ele pode ser aberto como
@@ -47,32 +67,33 @@ bool file_exists(string filepath) {
 }
 
 /**
- * Destroi um `GameTables` deletando seu membro que eh ponteiro para lista de 
- * `GameTable`s.
+ * Destroi um `PuzzleTables` deletando seu membro que eh ponteiro para lista de 
+ * `PuzzleTable`s.
  * 
- * @param   gametables  NAO recebe ponteiro mas sim a variavel em si
+ * @param   puzzletables  NAO recebe ponteiro mas sim a variavel em si
  */
-void destroy_gametables(GameTables gametables) {
-    delete[] gametables.tables;
+void destroy_puzzletables(PuzzleTables puzzletables) {
+    delete[] puzzletables.tables;
+    puzzletables.tables = nullptr;
     return;
 }
 
 /**
- * Recebe string com caminho de um arquivo a parseado como GameTables. Descarta
+ * Recebe string com caminho de um arquivo a parseado como PuzzleTables. Descarta
  * tables que nao consegue parsear e avisa, mas nao gera erros ou para a execucao do 
  * programa. Nao checa se o arquivo existe ou eh acessivel; isto deve ser feito
  * de antemao. Espera-se que os tabuleiros estejam no seguinte formato:
  * 9 inteiros, com ou sem sinal, separados por whitespace (fora \n) seguidos
  * por uma linha vazia (mesmo sendo o ultimo tabuleiro do arquivo). O arquivo
  * deve comecar imediatamente com a primeira fileira do primeiro tabuleiro, isto
- * eh, nada de whitespace ou comentarios antes.  Se o membro `gametables` do retorno 
+ * eh, nada de whitespace ou comentarios antes.  Se o membro `puzzletables` do retorno 
  * eh nullptr, um erro ocorreu.
  * 
  * @param   input_puzzle_file   caminho do arquivo
- * @returns GameTables com tables que foram parseadas com sucesso
+ * @returns PuzzleTables com tables que foram parseadas com sucesso
  */
-GameTables gen_gametables(string input_puzzle_file) {
-    GameTables gametables { 0, nullptr };
+PuzzleTables gen_puzzletables(string input_puzzle_file) {
+    PuzzleTables puzzletables { 0, nullptr };
     ifstream input_stream (input_puzzle_file);
     int numcount = 0; // qtd inteiros no arquivo de texto
     int throwaway{};  // variavel inutil p forcar `>>` a procurar inteiros
@@ -86,13 +107,13 @@ GameTables gen_gametables(string input_puzzle_file) {
     // checando se faltam/sobram numeros e quantas tables leremos
     if (numcount % 81 != 0) {
         cout << "Erro: `input_puzzle_file` contem tabuleiro mal formado (faltam ou sobram numeros)." << endl;
-        return gametables;
+        return puzzletables;
     }
     tablecount = numcount / 81;
-    // tables eh ponteiro para array de `tablecount` `GameTable`s vazios (?) 
-    GameTable* tables     { new GameTable[tablecount]{} }; 
-    gametables.tables     = tables; // LEMBRAR de deletar usando `delete[] tables`
-    gametables.tablecount = tablecount;
+    // tables eh ponteiro para array de `tablecount` `PuzzleTable`s vazios (?) 
+    PuzzleTable* tables     { new PuzzleTable[tablecount]{} }; 
+    puzzletables.tables     = tables; // LEMBRAR de deletar usando `delete[] tables`
+    puzzletables.tablecount = tablecount;
 
     int table_index{}, line_index{}, row_index{};
     for (table_index = 0; table_index < tablecount; table_index++) {
@@ -102,7 +123,7 @@ GameTables gen_gametables(string input_puzzle_file) {
             }
         }
     }
-    return gametables;
+    return puzzletables;
 }
 
 /**
@@ -162,13 +183,13 @@ void print_help() {
 }
 
 /**
- * printa na tela a gametable indentada com `offset` espacos antes do primeiro
+ * printa na tela a puzzletable indentada com `offset` espacos antes do primeiro
  * numero (padrao 0).
  *
- * @params  gametable   tabela que sera printada
+ * @params  puzzletable   tabela que sera printada
  * @params  offset      indentacao da table (padrao 0)
  */
-void print_gametable(GameTable gametable, int offset = 3) {
+void print_puzzletable(PuzzleTable puzzletable, int offset = 3) {
     string padding (offset, ' ');
     for (int line_index = 0; line_index < 9; line_index++) {
         cout << padding;
@@ -179,10 +200,10 @@ void print_gametable(GameTable gametable, int offset = 3) {
             if (row_index % 3 == 0) { 
                 cout << "|";
             }
-            if (gametable.table[line_index][row_index] < 0) {
+            if (puzzletable.table[line_index][row_index] < 0) {
                 cout << " ";
             } else {
-                cout << gametable.table[line_index][row_index];
+                cout << puzzletable.table[line_index][row_index];
             }
         }
         cout << "|" << endl;
@@ -192,21 +213,17 @@ void print_gametable(GameTable gametable, int offset = 3) {
 }
 
 
-struct GameState {
-    int         chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
-    PlayState   playstate;
-};
 
 /**
- * Apresenta interativamente as puzzles no GameTables e retorna o indice da puzzle
+ * Apresenta interativamente as puzzles no PuzzleTables e retorna o indice da puzzle
  * escolhida pelo usuario.
  *
- * @param   gametables  
+ * @param   puzzletables  
  * @param   chosen_puzzle   -1 indica que nenhuma puzzle foi escolhida ainda  
  * @param   shown_puzzle    puzzle que vamos printar e oferecer ao usuario
  * @return  indice da puzzle selecionada
  */
-int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
+int select_puzzle(PuzzleTables puzzletables, int chosen_puzzle, int shown_puzzle) {
     bool exit_flag = false;
     while (!exit_flag) {
         cin.clear();
@@ -216,13 +233,13 @@ int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
             cout << "Puzzle " << chosen_puzzle << " escolhida." << endl;
         }
         cout << "Puzzle " << shown_puzzle << " exibida a seguir: " << endl;
-        print_gametable(gametables.tables[shown_puzzle]);
-        cout << "0-" << gametables.tablecount - 1 << ": mostrar puzzle com esse indice" << endl;
+        print_puzzletable(puzzletables.tables[shown_puzzle]);
+        cout << "0-" << puzzletables.tablecount - 1 << ": mostrar puzzle com esse indice" << endl;
         cout << "a: mostrar proxima puzzle" << endl;
         cout << "b: mostrar puzzle anterior" << endl;
         cout << "c: escolher puzzle exibida" << endl;
         cout << "d: voltar para menu inicial" << endl;
-        cout << "0-" << gametables.tablecount - 1 << "abcd? ";
+        cout << "0-" << puzzletables.tablecount - 1 << "abcd? ";
         string user_input{};
         getline(cin, user_input);
         if (user_input == "") {
@@ -231,13 +248,13 @@ int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
         } else if (user_input.front() == 'a') {
             shown_puzzle++;
             // "dando a volta" na lista de puzzle
-            if (shown_puzzle == gametables.tablecount)
+            if (shown_puzzle == puzzletables.tablecount)
                 shown_puzzle = 0;
         } else if (user_input.front() == 'b') {
             shown_puzzle--;
             // "dando a volta" na lista de puzzle
             if (shown_puzzle == -1) {
-                shown_puzzle = gametables.tablecount - 1;
+                shown_puzzle = puzzletables.tablecount - 1;
             }
         } else if (user_input.front() == 'c') {
             chosen_puzzle = shown_puzzle;
@@ -257,19 +274,12 @@ int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
 }
 
 
-struct PlayState {
-    int       puzzle_index;
-    int       checks_used;
-    GameTable input_table; /** contem os digitos escritos pelo usuario */
-    int       last_move_pos[2]; /** posicao (linha, coluna) da ultima jogada */
-    int       last_move_input;  /** ultimo digito inserido. -1 quer dizer que um digito foi apagado */ 
-};
 
 /**
  * entra no fluxo de jogo de puzzle
  */
-void play_puzzle(const GameTable gametable, GameState* gamestate) {
-    print_gametable(gametable);
+void play_puzzle(const PuzzleTable puzzletable, GameState* gamestate) {
+    print_puzzletable(puzzletable);
     
     
 
@@ -284,18 +294,18 @@ void play_puzzle(const GameTable gametable, GameState* gamestate) {
  * para o main() ate receber ordem para sair do jogo.
  *
  * @param   config      configuracao gerada com make_config()
- * @param   gametables  gametables gerada com gen_gametables()
+ * @param   puzzletables  puzzletables gerada com gen_puzzletables()
  * @param   gamestate   
  */
-void main_menu(Config config, GameTables gametables, GameState gamestate) {
+void main_menu(Config config, PuzzleTables puzzletables, GameState* gamestate) {
     bool exit_flag = false;
     while (!exit_flag) {
         cout << "SUDOKU INTERATIVO" << endl;
-        if (gamestate.chosen_puzzle == -1) {
+        if (gamestate->chosen_puzzle == -1) {
             cout << "Nenhuma puzzle escolhida ainda! A opcao 1 te permite visualizar puzzles e escolher uma." << endl;
         } else {
-            cout << "Puzzle " << gamestate.chosen_puzzle << " selecionada." << endl;
-            print_gametable(gametables.tables[gamestate.chosen_puzzle]);
+            cout << "Puzzle " << gamestate->chosen_puzzle << " selecionada." << endl;
+            print_puzzletable(puzzletables.tables[gamestate->chosen_puzzle]);
         }
         cout << endl << endl;
         cout << "a - Visualizar puzzles e escolher uma" << endl;
@@ -309,10 +319,10 @@ void main_menu(Config config, GameTables gametables, GameState gamestate) {
         switch (menu_escolha) {
             case 'a':
                 cout << endl << endl;
-                gamestate.chosen_puzzle = select_puzzle(gametables, gamestate.chosen_puzzle, 0);
+                gamestate->chosen_puzzle = select_puzzle(puzzletables, gamestate->chosen_puzzle, 0);
                 break;
             case 'b':
-                play_puzzle(gametables, gamestate);
+                play_puzzle(puzzletables.tables[gamestate->chosen_puzzle], gamestate);
                 break;
             case 'c':
                 break;
@@ -328,6 +338,10 @@ void main_menu(Config config, GameTables gametables, GameState gamestate) {
     return;
 }
 
+void destroy_gamestate(GameState gamestate) {
+    destroy_puzzletables(gamestate.puzzletables);
+    return;
+}
 
 int main(int argc, char **argv) 
 {
@@ -348,15 +362,16 @@ int main(int argc, char **argv)
         cout << "Erro: nao eh possivel acessar o arquivo " << config.input_puzzle_file << endl;
         return -1;
     }
-    GameTables gametables = gen_gametables(config.input_puzzle_file);
-    if (gametables.tablecount == 0) {
-        cout << "Erro: `init_gametables` nao foi capaz de inicializar nenhuma gametable." << endl;
+    PuzzleTables puzzletables = gen_puzzletables(config.input_puzzle_file);
+    if (puzzletables.tablecount == 0) {
+        cout << "Erro: `init_puzzletables` nao foi capaz de inicializar nenhuma puzzletable." << endl;
         return -1;
     }
-    cout << "Info: " << gametables.tablecount << " tables gerados" << endl;
-    GameState gamestate { -1 };
-    main_menu(config, gametables, gamestate);
-    destroy_gametables(gametables);
+    cout << "Info: " << puzzletables.tablecount << " tables gerados" << endl;
+    PlayState playstate {-1, 0, empty_table, 0, 0, 0, false };
+    GameState gamestate { config, -1, puzzletables, playstate };
+    main_menu(config, puzzletables, &gamestate);
+    destroy_gamestate(gamestate);
     return 0;
 }
 
