@@ -193,7 +193,8 @@ void print_gametable(GameTable gametable, int offset = 3) {
 
 
 struct GameState {
-    int chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
+    int         chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
+    PlayState   playstate;
 };
 
 /**
@@ -255,6 +256,29 @@ int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
     return chosen_puzzle;
 }
 
+
+struct PlayState {
+    int       puzzle_index;
+    int       checks_used;
+    GameTable input_table; /** contem os digitos escritos pelo usuario */
+    int       last_move_pos[2]; /** posicao (linha, coluna) da ultima jogada */
+    int       last_move_input;  /** ultimo digito inserido. -1 quer dizer que um digito foi apagado */ 
+};
+
+/**
+ * entra no fluxo de jogo de puzzle
+ */
+void play_puzzle(const GameTable gametable, GameState* gamestate) {
+    print_gametable(gametable);
+    
+    
+
+
+
+
+    return;
+}
+
 /**
  * Entra no fluxo principal do jogo. Oferece o menu principal e nao devolve controle
  * para o main() ate receber ordem para sair do jogo.
@@ -263,7 +287,7 @@ int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
  * @param   gametables  gametables gerada com gen_gametables()
  * @param   gamestate   
  */
-void enter_main_menu(Config config, GameTables gametables, GameState gamestate) {
+void main_menu(Config config, GameTables gametables, GameState gamestate) {
     bool exit_flag = false;
     while (!exit_flag) {
         cout << "SUDOKU INTERATIVO" << endl;
@@ -278,7 +302,7 @@ void enter_main_menu(Config config, GameTables gametables, GameState gamestate) 
         cout << "b - Jogar puzzle escolhido" << endl;
         cout << "c - Mostrar regras e ajuda" << endl;
         cout << "d - Sair do jogo" << endl;
-        cout << "abcd?  " << std::flush;
+        cout << "abcd? " << std::flush;
         char menu_escolha{};
         cin.clear();
         cin >> menu_escolha;
@@ -288,11 +312,13 @@ void enter_main_menu(Config config, GameTables gametables, GameState gamestate) 
                 gamestate.chosen_puzzle = select_puzzle(gametables, gamestate.chosen_puzzle, 0);
                 break;
             case 'b':
+                play_puzzle(gametables, gamestate);
                 break;
             case 'c':
                 break;
             case 'd':
                 exit_flag = true;
+                break;
             default:
                 cout << "Opcao nao reconhecida!" << endl;
                 break;
@@ -329,7 +355,7 @@ int main(int argc, char **argv)
     }
     cout << "Info: " << gametables.tablecount << " tables gerados" << endl;
     GameState gamestate { -1 };
-    enter_main_menu(config, gametables, gamestate);
+    main_menu(config, gametables, gamestate);
     destroy_gametables(gametables);
     return 0;
 }
