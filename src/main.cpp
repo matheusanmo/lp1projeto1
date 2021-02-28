@@ -72,42 +72,35 @@ void destroy_gametables(GameTables gametables) {
  */
 GameTables gen_gametables(string input_puzzle_file) {
     GameTables gametables { 0, nullptr };
-    int tablecount = 1;
-    int linecount  = 1;
     ifstream input_stream (input_puzzle_file);
-    string line;
-    while (getline(input_stream, line)) {
-        linecount++;
+    int numcount = 0; // qtd inteiros no arquivo de texto
+    int throwaway{};  // variavel inutil p forcar `>>` a procurar inteiros
+    int tablecount = 0;
+    while (input_stream >> throwaway) {
+        numcount++;
     }
-    // caso tenhamos recebido input mal formatado, esta eh uma forma de descobrir
-    // que tambem nos diz a quantidade de tabuleiros declarados.
-    if (linecount % 10 != 0) {
-        cout << "Erro: input_puzzle_file contem algum tabuleiro mal formatado (linhas a mais ou a menos). `linecount` = " << linecount << endl;
+    // resetando posicao no arquivo
+    input_stream.clear();
+    input_stream.seekg(0);
+    // checando se faltam/sobram numeros e quantas tables leremos
+    if (numcount % 81 != 0) {
+        cout << "Erro: `input_puzzle_file` contem tabuleiro mal formado (faltam ou sobram numeros)." << endl;
         return gametables;
     }
-    tablecount            = linecount / 10; // 10 linhas por tabuleiro (9 de numero + linha vazia)
+    tablecount = numcount / 81;
     // tables eh ponteiro para array de `tablecount` `GameTable`s vazios (?) 
     GameTable* tables     { new GameTable[tablecount]{} }; 
     gametables.tables     = tables; // LEMBRAR de deletar usando `delete[] tables`
     gametables.tablecount = tablecount;
 
-    // resetando posicao no arquivo (nao consegui com `seekg` por alguma razao)
-    input_stream.close();
-    input_stream = ifstream(input_puzzle_file);
     int table_index{}, line_index{}, row_index{};
     for (table_index = 0; table_index < tablecount; table_index++) {
         for (line_index = 0; line_index < 9; line_index++) { 
             for (row_index = 0; row_index < 9; row_index++) {
-                int readnumber = 0;
-                input_stream >> readnumber;
-                cout << readnumber << " ";
-                tables[tablecount].table[line_index][row_index] = readnumber;
+                input_stream >> tables[table_index].table[line_index][row_index];
             }
-            int throwaway{};
-            //input_stream >> throwaway;
         }
     }
-    //input_stream.close();
     return gametables;
 }
 
