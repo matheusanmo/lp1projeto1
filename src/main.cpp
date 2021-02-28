@@ -14,6 +14,7 @@ using std::ifstream;
 #include <sstream>
 using std::stringstream;
 
+// TODO const nos paramtros de funcoes
 const int    DEFAULT_NCHECK_NUM        = 3;
 const string DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
 
@@ -135,7 +136,8 @@ Config make_config(int argc, char** argv) {
                     conf.ncheck = stoi(string(argv[i])); }
                 catch (const std::invalid_argument& ia) {
                     cout << "Aviso:`--ncheck` nao recebeu argumento valido (deve ser numero inteiro). "
-                         << "usando valor padrao " << DEFAULT_NCHECK_NUM << "." << endl; }
+                         << "usando valor padrao " << DEFAULT_NCHECK_NUM << "." << endl; 
+                }
         } else {
             conf.input_puzzle_file = arg;
             // checando caso usuario tenha passado argumentos "a mais"
@@ -166,17 +168,140 @@ void print_help() {
  * @params  gametable   tabela que sera printada
  * @params  offset      indentacao da table (padrao 0)
  */
-void print_gametable(GameTable gametable, int offset = 0) {
+void print_gametable(GameTable gametable, int offset = 3) {
     string padding (offset, ' ');
     for (int line_index = 0; line_index < 9; line_index++) {
         cout << padding;
+        if (line_index % 3 == 0) {
+            cout << "+---+---+---+" << endl << padding;
+        }
         for (int row_index = 0; row_index < 9; row_index++) {
-            cout << gametable.table[line_index][row_index] << " ";
+            if (row_index % 3 == 0) { 
+                cout << "|";
+            }
+            if (gametable.table[line_index][row_index] < 0) {
+                cout << " ";
+            } else {
+                cout << gametable.table[line_index][row_index];
+            }
+        }
+        cout << "|" << endl;
+    }
+    cout << padding << "+---+---+---+" << endl;
+    return;
+}
+
+
+struct GameState {
+    int chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
+};
+
+/**
+ * Apresenta interativamente as puzzles no GameTables e retorna o indice da puzzle
+ * escolhida pelo usuario.
+ *
+ * @param   gametables  
+ * @param   chosen_puzzle   -1 indica que nenhuma puzzle foi escolhida ainda  
+ * @param   shown_puzzle    puzzle que vamos printar e oferecer ao usuario
+ * @return  indice da puzzle selecionada
+ */
+int select_puzzle(GameTables gametables, int chosen_puzzle, int shown_puzzle) {
+    bool exit_flag = false;
+    while (!exit_flag) {
+        cin.clear();
+        if (chosen_puzzle == -1) {
+            cout << "Nenhuma puzzle foi escolhida ainda." << endl;
+        } else {
+            cout << "Puzzle " << chosen_puzzle << " escolhida." << endl;
+        }
+        cout << "Puzzle " << shown_puzzle << " exibida a seguir: " << endl;
+        print_gametable(gametables.tables[shown_puzzle]);
+        cout << "0-" << gametables.tablecount - 1 << ": mostrar puzzle com esse indice" << endl;
+        cout << "a: mostrar proxima puzzle" << endl;
+        cout << "b: mostrar puzzle anterior" << endl;
+        cout << "c: escolher puzzle exibida" << endl;
+        cout << "d: voltar para menu inicial" << endl;
+        cout << "0-" << gametables.tablecount - 1 << "abcd? ";
+        string user_input{};
+        getline(cin, user_input);
+        if (user_input == "") {
+            cout << "Nenhum opcao recebida." << endl;
+
+        } else if (user_input.front() == 'a') {
+            shown_puzzle++;
+            // "dando a volta" na lista de puzzle
+            if (shown_puzzle == gametables.tablecount)
+                shown_puzzle = 0;
+        } else if (user_input.front() == 'b') {
+            shown_puzzle--;
+            // "dando a volta" na lista de puzzle
+            if (shown_puzzle == -1) {
+                shown_puzzle = gametables.tablecount - 1;
+            }
+        } else if (user_input.front() == 'c') {
+            chosen_puzzle = shown_puzzle;
+        } else if (user_input.front() == 'd') {
+            return chosen_puzzle;
+        } else {
+            try {
+                shown_puzzle = stoi(user_input);
+            }
+            catch (const std::invalid_argument& ia) {
+                cout << "Esta opcao nao era esperada." << endl;
+            }
         }
         cout << endl;
     }
+    return chosen_puzzle;
+}
+
+/**
+ * Entra no fluxo principal do jogo. Oferece o menu principal e nao devolve controle
+ * para o main() ate receber ordem para sair do jogo.
+ *
+ * @param   config      configuracao gerada com make_config()
+ * @param   gametables  gametables gerada com gen_gametables()
+ * @param   gamestate   
+ */
+void enter_main_menu(Config config, GameTables gametables, GameState gamestate) {
+    bool exit_flag = false;
+    while (!exit_flag) {
+        cout << "SUDOKU INTERATIVO" << endl;
+        if (gamestate.chosen_puzzle == -1) {
+            cout << "Nenhuma puzzle escolhida ainda! A opcao 1 te permite visualizar puzzles e escolher uma." << endl;
+        } else {
+            cout << "Puzzle " << gamestate.chosen_puzzle << " selecionada." << endl;
+            print_gametable(gametables.tables[gamestate.chosen_puzzle]);
+        }
+        cout << endl << endl;
+        cout << "a - Visualizar puzzles e escolher uma" << endl;
+        cout << "b - Jogar puzzle escolhido" << endl;
+        cout << "c - Mostrar regras e ajuda" << endl;
+        cout << "d - Sair do jogo" << endl;
+        cout << "abcd?  " << std::flush;
+        char menu_escolha{};
+        cin.clear();
+        cin >> menu_escolha;
+        switch (menu_escolha) {
+            case 'a':
+                cout << endl << endl;
+                gamestate.chosen_puzzle = select_puzzle(gametables, gamestate.chosen_puzzle, 0);
+                break;
+            case 'b':
+                break;
+            case 'c':
+                break;
+            case 'd':
+                exit_flag = true;
+            default:
+                cout << "Opcao nao reconhecida!" << endl;
+                break;
+        }
+    }
+    cout << "Saindo do programa." << endl;
     return;
 }
+
 
 int main(int argc, char **argv) 
 {
@@ -202,10 +327,10 @@ int main(int argc, char **argv)
         cout << "Erro: `init_gametables` nao foi capaz de inicializar nenhuma gametable." << endl;
         return -1;
     }
-    print_gametable(gametables.tables[0]);
+    cout << "Info: " << gametables.tablecount << " tables gerados" << endl;
+    GameState gamestate { -1 };
+    enter_main_menu(config, gametables, gamestate);
     destroy_gametables(gametables);
-    cout << "config gerada" << endl << config.error << endl << config.help << endl << config.ncheck << endl << config.input_puzzle_file << endl;
-    cout << gametables.tablecount << " tables gerados" << endl;
     return 0;
 }
 
