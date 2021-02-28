@@ -1,3 +1,6 @@
+# diretorio build cmake
+build/*
+
 # Prerequisites
 *.d
 
