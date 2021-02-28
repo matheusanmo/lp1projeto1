@@ -1,15 +1,12 @@
 - DOXYGEN
 - include/src
 - arquitetura header/codigo
+- cmake
 
-* Trata corretamente os argumentos de linha de comando (5 pts);
-    ** Usage: sudoku [<options>] [<input_puzzle_file>]
-         Game options:
-           --ncheck    <num> Number of checks per game. Default = 3.
-           --help      Print this help text
-* Le e armazena os varios puzzles contidos em um arquivo de entrada, no formato indicado na secao 4 (5 pts);
-* Exibe corretamente a tela principal com o menu de acoes (5 pts);
-* Permite a escolha dos varios puzzles lidos do arquivo (5 pts);
+*OK Trata corretamente os argumentos de linha de comando (5 pts);
+*OK Le e armazena os varios puzzles contidos em um arquivo de entrada, no formato indicado na secao 4 (5 pts);
+*OK Exibe corretamente a tela principal com o menu de acoes (5 pts);
+*OK Permite a escolha dos varios puzzles lidos do arquivo (5 pts);
 * Executa corretamente a acao de posicionamento de digitos no tabuleiro (comando posicionar) com a identificacao jogadas invalidas (11 pts);
 * Executa corretamente a remocao de digitos posicionados pelo jogador (comando remover) (10 pts);
 * Executa corretamente o comando de desfazer acao (12 pts);
