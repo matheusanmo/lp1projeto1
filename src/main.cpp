@@ -14,21 +14,15 @@ using std::ifstream;
 #include <sstream>
 using std::stringstream;
 
+#include "util.h"
+#include "gametable.h"
+
 
 struct Config {
     int    error; // codigo de erro caso programa seja mal invocado. 0 = tudo ok
     bool   help;
     int    ncheck;
     string input_puzzle_file;
-};
-
-struct PuzzleTable {
-    int table[9][9];
-};
-
-struct PuzzleTables {
-    int  tablecount;
-    PuzzleTable* tables;
 };
 
 struct PlayState {
@@ -50,81 +44,7 @@ struct GameState {
 // TODO const nos paramtros de funcoes
 const int         DEFAULT_NCHECK_NUM        = 3;
 const string      DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
-const PuzzleTable empty_table{};
-
-
-
-/**
- * recebe string que deve ser caminho de um arquivo. checa se ele pode ser aberto como
- * stream e retorna true em caso positivo
- * 
- * @param   filepath    caminho do arquivo a ser acessado com `std::ifstream`
- * @returns `true` caso o arquivo possa ser acessado
- */
-bool file_exists(string filepath) {
-    ifstream input_stream (filepath);
-    return input_stream.good();
-}
-
-/**
- * Destroi um `PuzzleTables` deletando seu membro que eh ponteiro para lista de 
- * `PuzzleTable`s.
- * 
- * @param   puzzletables  NAO recebe ponteiro mas sim a variavel em si
- */
-void destroy_puzzletables(PuzzleTables puzzletables) {
-    delete[] puzzletables.tables;
-    puzzletables.tables = nullptr;
-    return;
-}
-
-/**
- * Recebe string com caminho de um arquivo a parseado como PuzzleTables. Descarta
- * tables que nao consegue parsear e avisa, mas nao gera erros ou para a execucao do 
- * programa. Nao checa se o arquivo existe ou eh acessivel; isto deve ser feito
- * de antemao. Espera-se que os tabuleiros estejam no seguinte formato:
- * 9 inteiros, com ou sem sinal, separados por whitespace (fora \n) seguidos
- * por uma linha vazia (mesmo sendo o ultimo tabuleiro do arquivo). O arquivo
- * deve comecar imediatamente com a primeira fileira do primeiro tabuleiro, isto
- * eh, nada de whitespace ou comentarios antes.  Se o membro `puzzletables` do retorno 
- * eh nullptr, um erro ocorreu.
- * 
- * @param   input_puzzle_file   caminho do arquivo
- * @returns PuzzleTables com tables que foram parseadas com sucesso
- */
-PuzzleTables gen_puzzletables(string input_puzzle_file) {
-    PuzzleTables puzzletables { 0, nullptr };
-    ifstream input_stream (input_puzzle_file);
-    int numcount = 0; // qtd inteiros no arquivo de texto
-    int throwaway{};  // variavel inutil p forcar `>>` a procurar inteiros
-    int tablecount = 0;
-    while (input_stream >> throwaway) {
-        numcount++;
-    }
-    // resetando posicao no arquivo
-    input_stream.clear();
-    input_stream.seekg(0);
-    // checando se faltam/sobram numeros e quantas tables leremos
-    if (numcount % 81 != 0) {
-        cout << "Erro: `input_puzzle_file` contem tabuleiro mal formado (faltam ou sobram numeros)." << endl;
-        return puzzletables;
-    }
-    tablecount = numcount / 81;
-    // tables eh ponteiro para array de `tablecount` `PuzzleTable`s vazios (?) 
-    PuzzleTable* tables     { new PuzzleTable[tablecount]{} }; 
-    puzzletables.tables     = tables; // LEMBRAR de deletar usando `delete[] tables`
-    puzzletables.tablecount = tablecount;
-
-    int table_index{}, line_index{}, row_index{};
-    for (table_index = 0; table_index < tablecount; table_index++) {
-        for (line_index = 0; line_index < 9; line_index++) { 
-            for (row_index = 0; row_index < 9; row_index++) {
-                input_stream >> tables[table_index].table[line_index][row_index];
-            }
-        }
-    }
-    return puzzletables;
-}
+const PlayState default_playstate {-1, 0, empty_table, 0, 0, 0, false };
 
 /**
  * recebe argc e argv como os do main e retorna Config equivalente
@@ -181,38 +101,6 @@ void print_help() {
          << endl;
     return;
 }
-
-/**
- * printa na tela a puzzletable indentada com `offset` espacos antes do primeiro
- * numero (padrao 0).
- *
- * @params  puzzletable   tabela que sera printada
- * @params  offset      indentacao da table (padrao 0)
- */
-void print_puzzletable(PuzzleTable puzzletable, int offset = 3) {
-    string padding (offset, ' ');
-    for (int line_index = 0; line_index < 9; line_index++) {
-        cout << padding;
-        if (line_index % 3 == 0) {
-            cout << "+---+---+---+" << endl << padding;
-        }
-        for (int row_index = 0; row_index < 9; row_index++) {
-            if (row_index % 3 == 0) { 
-                cout << "|";
-            }
-            if (puzzletable.table[line_index][row_index] < 0) {
-                cout << " ";
-            } else {
-                cout << puzzletable.table[line_index][row_index];
-            }
-        }
-        cout << "|" << endl;
-    }
-    cout << padding << "+---+---+---+" << endl;
-    return;
-}
-
-
 
 /**
  * Apresenta interativamente as puzzles no PuzzleTables e retorna o indice da puzzle
@@ -273,19 +161,12 @@ int select_puzzle(PuzzleTables puzzletables, int chosen_puzzle, int shown_puzzle
     return chosen_puzzle;
 }
 
-
-
 /**
  * entra no fluxo de jogo de puzzle
  */
 void play_puzzle(const PuzzleTable puzzletable, GameState* gamestate) {
     print_puzzletable(puzzletable);
     
-    
-
-
-
-
     return;
 }
 
@@ -368,7 +249,7 @@ int main(int argc, char **argv)
         return -1;
     }
     cout << "Info: " << puzzletables.tablecount << " tables gerados" << endl;
-    PlayState playstate {-1, 0, empty_table, 0, 0, 0, false };
+    PlayState playstate = default_playstate; 
     GameState gamestate { config, -1, puzzletables, playstate };
     main_menu(config, puzzletables, &gamestate);
     destroy_gamestate(gamestate);
