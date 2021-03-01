@@ -12,5 +12,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 add_compile_options(-Wall -Wextra)
 
 # definir nome de executavel e arquivos que o constroem
-add_executable(sudoku src/main.cpp src/util.cpp src/gametable.cpp)
+add_executable(sudoku src/main.cpp src/util.cpp src/gametable.cpp src/play.cpp)
 

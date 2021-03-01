@@ -1,3 +1,8 @@
+#include "gametable.h"
+#include "gamestate.h"
+#include "play.h"
+#include "util.h"
+
 #include <iostream>
 using std::cout;
 using std::cin;
@@ -14,10 +19,6 @@ using std::ifstream;
 #include <sstream>
 using std::stringstream;
 
-#include "util.h"
-#include "gametable.h"
-
-
 struct Config {
     int    error; // codigo de erro caso programa seja mal invocado. 0 = tudo ok
     bool   help;
@@ -25,26 +26,9 @@ struct Config {
     string input_puzzle_file;
 };
 
-struct PlayState {
-    int         puzzle_index;
-    int         checks_used;
-    PuzzleTable input_table; /** contem os digitos escritos pelo usuario. 0=nenhum input do usuario */
-    int         last_move_pos[2]; /** posicao (linha, coluna) da ultima jogada. */
-    int         last_move_input;  /** ultimo digito inserido. -1 quer dizer que um digito foi apagado */ 
-    bool        has_last_move;   /** alguma jogada ja foi realizada para falar-se da utima jogada? */
-};
-
-struct GameState {
-    Config       config;
-    int          chosen_puzzle; // -1 indica que nenhuma puzzle foi selecionada ainda
-    PuzzleTables puzzletables;
-    PlayState    playstate;
-};
-
 // TODO const nos paramtros de funcoes
 const int         DEFAULT_NCHECK_NUM        = 3;
 const string      DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
-const PlayState default_playstate {-1, 0, empty_table, 0, 0, 0, false };
 
 /**
  * recebe argc e argv como os do main e retorna Config equivalente
@@ -160,22 +144,6 @@ int select_puzzle(PuzzleTables puzzletables, int chosen_puzzle, int shown_puzzle
 }
 
 /**
- * entra no fluxo de jogo de puzzle
- */
-void play_puzzle(const PuzzleTable puzzletable, GameState* gamestate) {
-    bool exit_flag = false;
-    while (!exit_flag) {
-        cout << "a: Inserir digito" << endl;
-        cout << "b: Desfazer ultima jogada" << endl;
-        cout << "c: Remover digito inserido" << endl;
-        cout << "d: Solicitar verificação" << endl;
-        cout << "e: Retornar ao menu principal" << endl;
-
-    }
-    return;
-}
-
-/**
  * Entra no fluxo principal do jogo. Oferece o menu principal e nao devolve controle
  * para o main() ate receber ordem para sair do jogo.
  *
@@ -221,11 +189,6 @@ void main_menu(Config config, PuzzleTables puzzletables, GameState* gamestate) {
         }
     }
     cout << "Saindo do programa." << endl;
-    return;
-}
-
-void destroy_gamestate(GameState gamestate) {
-    destroy_puzzletables(gamestate.puzzletables);
     return;
 }
 

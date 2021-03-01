@@ -80,7 +80,7 @@ PuzzleTables gen_puzzletables(string input_puzzle_file) {
  */
 void print_puzzletable(PuzzleTable puzzletable, int offset, int line_marker, int row_marker) {
     auto table = puzzletable.table;
-    string padding (offset + 1, ' ');
+    string padding (offset + 1, ' '); //+1 para acomodar line marker
     int puzzle_line = 0;
     int line_marker_index = -1;
     if (line_marker != -1) {
