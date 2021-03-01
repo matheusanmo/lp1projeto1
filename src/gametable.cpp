@@ -10,6 +10,8 @@ using std::string;
 #include <fstream>
 using std::ifstream;
 
+#include "util.h"
+
 /**
  * Destroi um `PuzzleTables` deletando seu membro que eh ponteiro para lista de 
  * `PuzzleTable`s.
@@ -78,25 +80,37 @@ PuzzleTables gen_puzzletables(string input_puzzle_file) {
  * @params  offset      indentacao da table (padrao 3)
  */
 void print_puzzletable(PuzzleTable puzzletable, int offset) {
+    auto table = puzzletable.table;
     string padding (offset, ' ');
-    for (int line_index = 0; line_index < 9; line_index++) {
+    int puzzle_line = 0;
+    for (int line_index = 0; line_index < 14; line_index++) {
         cout << padding;
-        if (line_index % 3 == 0) {
-            cout << "+---+---+---+" << endl << padding;
-        }
-        for (int row_index = 0; row_index < 9; row_index++) {
-            if (row_index % 3 == 0) { 
-                cout << "|";
+        if (line_index == 0) {
+            cout << "    1 2 3   4 5 6   7 8 9"   << endl;
+        } else if (line_index == 1 || line_index == 13) {
+            cout << "  +-------+-------+-------+" << endl;
+        } else if (line_index == 5 || line_index == 9) {
+            cout << "  |-------+-------+-------|" << endl;
+        } else {
+            int puzzle_row = 0;
+            cout << puzzle_line + 1 << " | ";
+            for (int i = 4; i < 27; i++) {
+                if (i == 10 || i == 18 || i == 26 ){
+                    cout << "|";
+                } else if (odd(i)) {
+                    cout << " ";
+                } else {
+                    if (table[puzzle_line][puzzle_row] < 0)
+                        cout << " ";
+                    if (table[puzzle_line][puzzle_row] > 0)
+                        cout << table[puzzle_line][puzzle_row];
+                    puzzle_row++;
+                }
             }
-            if (puzzletable.table[line_index][row_index] < 0) {
-                cout << " ";
-            } else {
-                cout << puzzletable.table[line_index][row_index];
-            }
+            cout << endl;
+            puzzle_line++;
         }
-        cout << "|" << endl;
     }
-    cout << padding << "+---+---+---+" << endl;
     return;
 }
 
