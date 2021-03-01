@@ -7,6 +7,7 @@ using std::endl;
 
 #include <string>
 using std::string;
+using std::to_string;
 
 #include <fstream>
 using std::ifstream;
@@ -71,15 +72,9 @@ PuzzleTables gen_puzzletables(string input_puzzle_file) {
     return puzzletables;
 }
 
-/**
- * printa na tela a puzzletable indentada com `offset` espacos antes do primeiro
- * numero (padrao 3).
- *
- * @params  puzzletable   tabela que sera printada
- * @params  offset      indentacao da table (padrao 3)
- */
-void print_puzzletable(PuzzleTable puzzletable, int offset, int line_marker, int row_marker) {
-    auto table = puzzletable.table;
+void print_puzzletable(const PuzzleTable inputtable, const PuzzleTable fulltable, int offset, int line_marker, int row_marker){
+    auto full  = fulltable.table;
+    auto input = inputtable.table;
     string padding (offset + 1, ' '); //+1 para acomodar line marker
     int puzzle_line = 0;
     int line_marker_index = -1;
@@ -111,10 +106,13 @@ void print_puzzletable(PuzzleTable puzzletable, int offset, int line_marker, int
                 } else if (odd(i)) {
                     cout << " ";
                 } else {
-                    if (table[puzzle_line][puzzle_row] < 0)
+                    // imprimir numero na posicao quando aplicavel
+                    if (full[puzzle_line][puzzle_row] < 0 && input[puzzle_line][puzzle_row] < 1)
                         cout << " ";
-                    if (table[puzzle_line][puzzle_row] > 0)
-                        cout << table[puzzle_line][puzzle_row];
+                    if (full[puzzle_line][puzzle_row] < 0 && input[puzzle_line][puzzle_row] > 0)
+                        cout << tcolor(to_string(input[puzzle_line][puzzle_row]), BLUE, BOLD);
+                    if (full[puzzle_line][puzzle_row] > 0)
+                        cout << full[puzzle_line][puzzle_row];
                     puzzle_row++;
                 }
             }

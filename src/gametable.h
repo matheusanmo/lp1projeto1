@@ -17,7 +17,7 @@ const PuzzleTable empty_table{};
 
 PuzzleTables gen_puzzletables(string input_puzzle_file);
 void destroy_puzzletables(PuzzleTables puzzletables);
-void print_puzzletable(PuzzleTable puzzletable, int offset = 3, int line_marker = 2, int row_marker = 4);
+void print_puzzletable(const PuzzleTable input, const PuzzleTable fulltable, int offset = 3, int line_marker = -1, int row_marker = -1);
 
 #endif
 

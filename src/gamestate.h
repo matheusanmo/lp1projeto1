@@ -2,6 +2,15 @@
 #define GAMESTATE_H
 
 #include "gametable.h"
+#include "gamestate.h"
+#include "play.h"
+
+struct Config {
+    int    error; // codigo de erro caso programa seja mal invocado. 0 = tudo ok
+    bool   help;
+    int    ncheck;
+    string input_puzzle_file;
+};
 
 struct GameState {
     Config       config;

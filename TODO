@@ -3,6 +3,7 @@
 -OK arquitetura header/codigo
 -OK cmake
 - colocar `const` nos parametors de funcoes que merecem
+- colocar in/out nos @param validos
 - revisar documentacoa de funcoes
 
 *OK Trata corretamente os argumentos de linha de comando (5 pts);

@@ -18,14 +18,7 @@ using std::ifstream;
 
 #include <sstream>
 using std::stringstream;
-
-struct Config {
-    int    error; // codigo de erro caso programa seja mal invocado. 0 = tudo ok
-    bool   help;
-    int    ncheck;
-    string input_puzzle_file;
-};
-
+  
 // TODO const nos paramtros de funcoes
 const int         DEFAULT_NCHECK_NUM        = 3;
 const string      DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
@@ -105,7 +98,7 @@ int select_puzzle(PuzzleTables puzzletables, int chosen_puzzle, int shown_puzzle
             cout << "Puzzle " << chosen_puzzle << " escolhida." << endl;
         }
         cout << "Puzzle " << shown_puzzle << " exibida a seguir: " << endl;
-        print_puzzletable(puzzletables.tables[shown_puzzle]);
+        print_puzzletable(empty_table, puzzletables.tables[shown_puzzle]);
         cout << "0-" << puzzletables.tablecount - 1 << ": mostrar puzzle com esse indice" << endl;
         cout << "a: mostrar proxima puzzle " << "    " << "b: mostrar puzzle anterior" << endl;
         cout << "c: escolher puzzle exibida" << "    " << "d: voltar para menu inicial" << endl;
@@ -159,7 +152,7 @@ void main_menu(Config config, PuzzleTables puzzletables, GameState* gamestate) {
             cout << "Nenhuma puzzle escolhida ainda! A opcao 1 te permite visualizar puzzles e escolher uma." << endl;
         } else {
             cout << "Puzzle " << gamestate->chosen_puzzle << " selecionada." << endl;
-            print_puzzletable(puzzletables.tables[gamestate->chosen_puzzle]);
+            print_puzzletable(empty_table, puzzletables.tables[gamestate->chosen_puzzle]);
         }
         cout << endl << endl;
         cout << "a - Visualizar puzzles e escolher uma" << endl;
@@ -176,7 +169,7 @@ void main_menu(Config config, PuzzleTables puzzletables, GameState* gamestate) {
                 gamestate->chosen_puzzle = select_puzzle(puzzletables, gamestate->chosen_puzzle, 0);
                 break;
             case 'b':
-                play_puzzle(puzzletables.tables[gamestate->chosen_puzzle], gamestate);
+                play_puzzle(puzzletables.tables[gamestate->chosen_puzzle], &gamestate->playstate);
                 break;
             case 'c':
                 break;
