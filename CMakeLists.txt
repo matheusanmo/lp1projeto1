@@ -1,12 +1,16 @@
+# cmake --version
 cmake_minimum_required(VERSION 3.16.3)
 
-# set the project name
+# nome do projeto
 project(Sudoku)
 
-# specify the C++ standard
+# exigir suporte C++11
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
 
-# add the executable
+# exibir mais warnings
+add_compile_options(-Wall -Wextra)
+
+# definir nome de executavel e arquivos que o constroem
 add_executable(sudoku src/main.cpp src/util.cpp src/gametable.cpp)
 
