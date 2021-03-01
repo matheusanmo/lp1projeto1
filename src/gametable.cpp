@@ -1,4 +1,5 @@
 #include "gametable.h"
+#include "util.h"
 
 #include <iostream>
 using std::cout;
@@ -9,8 +10,6 @@ using std::string;
 
 #include <fstream>
 using std::ifstream;
-
-#include "util.h"
 
 /**
  * Destroi um `PuzzleTables` deletando seu membro que eh ponteiro para lista de 
@@ -79,12 +78,24 @@ PuzzleTables gen_puzzletables(string input_puzzle_file) {
  * @params  puzzletable   tabela que sera printada
  * @params  offset      indentacao da table (padrao 3)
  */
-void print_puzzletable(PuzzleTable puzzletable, int offset) {
+void print_puzzletable(PuzzleTable puzzletable, int offset, int line_marker, int row_marker) {
     auto table = puzzletable.table;
-    string padding (offset, ' ');
+    string padding (offset + 1, ' ');
     int puzzle_line = 0;
+    int line_marker_index = -1;
+    if (line_marker != -1) {
+        line_marker_index = 2 + (line_marker - 1) + (line_marker - 1) / 3;
+    }
+    if (row_marker > 0) {
+        int row_marker_padding = 4 + 2 * ((row_marker - 1) % 3) + 8 * ((row_marker - 1 ) / 3);
+        cout << padding << string(row_marker_padding, ' ') << "V" << endl;
+    }
     for (int line_index = 0; line_index < 14; line_index++) {
-        cout << padding;
+        if (line_index  == line_marker_index) {
+            cout << ">" << string(offset, ' ');
+        } else {
+            cout << padding;
+        }
         if (line_index == 0) {
             cout << "    1 2 3   4 5 6   7 8 9"   << endl;
         } else if (line_index == 1 || line_index == 13) {

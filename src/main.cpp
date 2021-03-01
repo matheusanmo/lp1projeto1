@@ -123,10 +123,8 @@ int select_puzzle(PuzzleTables puzzletables, int chosen_puzzle, int shown_puzzle
         cout << "Puzzle " << shown_puzzle << " exibida a seguir: " << endl;
         print_puzzletable(puzzletables.tables[shown_puzzle]);
         cout << "0-" << puzzletables.tablecount - 1 << ": mostrar puzzle com esse indice" << endl;
-        cout << "a: mostrar proxima puzzle" << endl;
-        cout << "b: mostrar puzzle anterior" << endl;
-        cout << "c: escolher puzzle exibida" << endl;
-        cout << "d: voltar para menu inicial" << endl;
+        cout << "a: mostrar proxima puzzle " << "    " << "b: mostrar puzzle anterior" << endl;
+        cout << "c: escolher puzzle exibida" << "    " << "d: voltar para menu inicial" << endl;
         cout << "0-" << puzzletables.tablecount - 1 << "abcd? ";
         string user_input{};
         getline(cin, user_input);
