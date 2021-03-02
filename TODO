@@ -10,8 +10,8 @@
 *OK Le e armazena os varios puzzles contidos em um arquivo de entrada, no formato indicado na secao 4 (5 pts);
 *OK Exibe corretamente a tela principal com o menu de acoes (5 pts);
 *OK Permite a escolha dos varios puzzles lidos do arquivo (5 pts);
-* Executa corretamente a acao de posicionamento de digitos no tabuleiro (comando posicionar) com a identificacao jogadas invalidas (11 pts);
-* Executa corretamente a remocao de digitos posicionados pelo jogador (comando remover) (10 pts);
+*OK Executa corretamente a acao de posicionamento de digitos no tabuleiro (comando posicionar) com a identificacao jogadas invalidas (11 pts);
+*OK Executa corretamente a remocao de digitos posicionados pelo jogador (comando remover) (10 pts);
 * Executa corretamente o comando de desfazer acao (12 pts);
 * Executa corretamente o comando de verificacao do tabuleiro (12 pts);
 * Exibe as regras do jogo quando solicitado (5 pts);
