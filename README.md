@@ -3,9 +3,9 @@
 `sudoku` é um programa em C++ que lê puzzles de sudoku e permite ao usuário jogar estes puzzles.
 
 # Autoria
-Aluno: Matheus Andrade Monteiro (matheusanmo@gmail.com)
-Professor: Selan Rodrigues dos Santos
-Turma DIM0120 - LINGUAGEM DE PROGRAMAÇÃO I T01 (2020.2) 
+- Aluno: Matheus Andrade Monteiro (matheusanmo@gmail.com)
+- Professor: Selan Rodrigues dos Santos
+- Turma DIM0120 - LINGUAGEM DE PROGRAMAÇÃO I T01 (2020.2) 
 
 ## Compilação
 `sudoku` foi desenvolvido e testado em uma máquina Ubuntu 20.04. Compilar `sudoku` depende do CMake e de um compilador C++ com suporte a C++11. Segue o processo de compilação do programa:
