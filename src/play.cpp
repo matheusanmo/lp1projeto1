@@ -50,8 +50,8 @@ void history_push(UndoHistory* undohistory, PlayMove newmove) {
 }
 
 /**
- * Testa se faz sentido remover o digito deste espaco. Retorna 1 quando o numero
- * eh removido com sucesso; numeros negativos indicam erros.
+ * Testa se faz sentido remover o digito deste espaco. Retorna o numero removido 
+ * quando o numero eh removido com sucesso; numeros negativos indicam erros.
  * 
  * @param[in,out]   playstate
  */
@@ -69,9 +69,9 @@ int remove_digit(PuzzleTable puzzletable, PlayState* playstate, int line, int ro
         // tentou apagar fora do tabuleiro
         return -3;
     }
-    history_push(&playstate->undohistory, { line, row, playstate->input_table.table[line-1][row-1], true });
+    int removed_num = playstate->input_table.table[line-1][row-1];
     playstate->input_table.table[line-1][row-1] = 0;
-    return 0;
+    return removed_num;
 }
 
 /**
@@ -99,7 +99,6 @@ int insert_digit(PuzzleTable puzzletable, PlayState* playstate, int line, int ro
         return -4;
     }
     playstate->input_table.table[line-1][row-1] = num;
-    history_push(&playstate->undohistory, { line, row, num, false });
     return 0;
 }
 
@@ -165,6 +164,7 @@ void play_puzzle(const PuzzleTable puzzletable, PlayState* playstate) {
                     } else {
                         line_marker = line_num;
                         row_marker = row_num;
+                        history_push(&playstate->undohistory, { line_num, row_num, num, false });
                     }
                 }
                 break;
@@ -190,6 +190,7 @@ void play_puzzle(const PuzzleTable puzzletable, PlayState* playstate) {
                     if (remove_return < 0) {
                         cout << "Erro " << remove_return << ": erro removendo numero na puzzle. Comando desconsiderado." << endl;
                     } else {
+                        history_push(&playstate->undohistory, { line_num, row_num, remove_return, true });
                         line_marker = line_num;
                         row_marker = row_num;
                     }
@@ -198,6 +199,7 @@ void play_puzzle(const PuzzleTable puzzletable, PlayState* playstate) {
             case 'd':
                 break;
             case 'e':
+                return;
                 break;
             default:
                 break;
