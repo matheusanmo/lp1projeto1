@@ -22,4 +22,4 @@ Os seguintes pontos listados na descrição do projeto foram implementados:
 - Executa corretamente a ação de posicionamento de dígitos no tabuleiro (comando posicionar) com a identificação de jogadas inválidas.
 - Executa corretamente a remoção de digitos posicionados pelo jogador (comando remover).
 - Executa corretamente o comando de desfazer ação.
-- Apresenta as indicações com ‘setas‘ da coordenada da célula que foi alvo da última ação (5 pts).
+- Apresenta as indicações com ‘setas‘ da coordenada da célula que foi alvo da última ação.
