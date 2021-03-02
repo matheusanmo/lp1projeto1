@@ -19,7 +19,6 @@ using std::ifstream;
 #include <sstream>
 using std::stringstream;
   
-// TODO const nos paramtros de funcoes
 const int         DEFAULT_NCHECK_NUM        = 3;
 const string      DEFAULT_INPUT_PUZZLE_FILE ("input.txt");
 

@@ -72,6 +72,15 @@ PuzzleTables gen_puzzletables(string input_puzzle_file) {
     return puzzletables;
 }
 
+/**
+ * Recebe uma table com input do usuario e a table "chave". Printa os numeros dados 
+ * pela table chave em branco e os do usuario em azul. Tambem desenha os markers
+ * de ultima jogada.
+ *
+ * @param   inputtable  tabela com input do usuario. Caso nao tenha input usar `empty_table`.
+ * @param   line_marker ultima linha jogada (1-indexada)
+ * @param   row_marker  ultima coluna jogada (1-indexada)
+ */
 void print_puzzletable(const PuzzleTable inputtable, const PuzzleTable fulltable, int offset, int line_marker, int row_marker){
     auto full  = fulltable.table;
     auto input = inputtable.table;

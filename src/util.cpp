@@ -21,10 +21,16 @@ bool file_exists(string filepath) {
     return input_stream.good();
 }
 
+/**
+ * Retorna true quando `n` é par.
+ */
 bool even(int n) {
     return n % 2 == 0;
 }
 
+/**
+ * Retorna true quando `n` não é par.
+ */
 bool odd(int n) {
     return !even(n);
 }

@@ -8,6 +8,8 @@ using std::endl;
 using std::cin;
 
 /**
+ * Retorna ultima jogada cadastrada e a remove da lista de jogadas
+ *
  * @param[in,out]   undohistory
  */
 PlayMove history_pop(UndoHistory* undohistory) {
@@ -27,6 +29,8 @@ PlayMove history_pop(UndoHistory* undohistory) {
 }
 
 /**
+ * Adiciona jogada no final da lista de jogadas feitas. 
+ *
  * @param[in,out]   undohistory
  */
 void history_push(UndoHistory* undohistory, PlayMove newmove) {
@@ -199,12 +203,14 @@ void play_puzzle(const PuzzleTable puzzletable, PlayState* playstate) {
             case 'd':
                 break;
             case 'e':
-                return;
+                exit_flag = true;
                 break;
             default:
                 break;
         }
     }
+    delete playstate->undohistory.moves;
+    delete playstate;
     return;
 }
 

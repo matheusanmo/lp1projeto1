@@ -2,9 +2,9 @@
 -OK include/src
 -OK arquitetura header/codigo
 -OK cmake
-- colocar `const` nos parametors de funcoes que merecem
 - colocar in/out nos @param validos
-- revisar documentacoa de funcoes
+- colocar `const` nos parametors de funcoes que merecem
+-OK revisar documentacoa de funcoes
 
 *OK Trata corretamente os argumentos de linha de comando (5 pts);
 *OK Le e armazena os varios puzzles contidos em um arquivo de entrada, no formato indicado na secao 4 (5 pts);
