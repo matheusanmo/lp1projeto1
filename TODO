@@ -12,12 +12,12 @@
 *OK Permite a escolha dos varios puzzles lidos do arquivo (5 pts);
 *OK Executa corretamente a acao de posicionamento de digitos no tabuleiro (comando posicionar) com a identificacao jogadas invalidas (11 pts);
 *OK Executa corretamente a remocao de digitos posicionados pelo jogador (comando remover) (10 pts);
-* Executa corretamente o comando de desfazer acao (12 pts);
+*OK Executa corretamente o comando de desfazer acao (12 pts);
 * Executa corretamente o comando de verificacao do tabuleiro (12 pts);
 * Exibe as regras do jogo quando solicitado (5 pts);
 * Indica corretamente se uma partida finalizada foi vencida ou perdida (5 pts);
 * Apresenta uma interface com usuario igual ou similar a que foi especificada nesse docu- mento (5 pts);
 * Apresenta uma validacao robusta dos comandos textuais de acao fornecidos pelo usuario (5 pts);
 * Exibe corretamente a lista de digitos disponiveis conforme o progresso do jogo (5 pts);
-* Apresenta as indicacaoes com ‘setas‘ da coordenada da celula que foi alvo da ultima acao (5 pts);
+*OK Apresenta as indicacaoes com ‘setas‘ da coordenada da celula que foi alvo da ultima acao (5 pts);
 * Apresenta um fluxo correto entre telas, com opcao de retomar uma partida suspensa e solicitacao de confirmacao de finalizacao de partida, caso exista uma partida em andamento (5 pts);
