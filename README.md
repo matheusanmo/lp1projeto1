@@ -23,3 +23,11 @@ Os seguintes pontos listados na descrição do projeto foram implementados:
 - Executa corretamente a remoção de digitos posicionados pelo jogador (comando remover).
 - Executa corretamente o comando de desfazer ação.
 - Apresenta as indicações com ‘setas‘ da coordenada da célula que foi alvo da última ação.
+
+## Problemas conhecidos
+- `valgrind` acusa erros de no processo de construir a lista de jogadas para desfazer.
+- O jogo não checa vitórias ou derrotas.
+- A verificação de jogo não foi implementada. Não existem, portanto, formas de ganhar ou perder.
+- A interface difere da especificação.
+- A entrada de comandos durante o jogo difere da especificação.
+- Não é possivel voltar para um jogo em andamento depois de voltar para o menu principal. 

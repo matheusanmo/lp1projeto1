@@ -49,7 +49,6 @@ void history_push(UndoHistory* undohistory, PlayMove newmove) {
     undohistory->moves = newmoves;
     undohistory->moves[undohistory->undo_count - 1] = newmove;
 
-    cout << endl << "undocout " << undohistory->undo_count << endl; 
     return;
 }
 
