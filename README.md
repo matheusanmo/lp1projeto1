@@ -12,3 +12,13 @@
 
 ## Utilização
 `sudoku --help` imprime a ajuda do programa.
+
+## Pontos implementados
+Os seguintes pontos listados na descrição do projeto foram implementados:
+- Trata corretamente os argumentos de linha de comando.
+- Lê e armazena os vários puzzles contidos em um arquivo de entrada, no formato indicado na seção 4.
+- Exibe corretamente a tela principal com o menu de ações.
+- Permite a escolha dos vários puzzles lidos do arquivo.
+- Executa corretamente a ação de posicionamento de dígitos no tabuleiro (comando posicionar) com a identificação de jogadas inválidas.
+- Executa corretamente a remoção de digitos posicionados pelo jogador (comando remover).
+- Executa corretamente o comando de desfazer ação.
