@@ -25,7 +25,7 @@ Os seguintes pontos listados na descrição do projeto foram implementados:
 - Apresenta as indicações com ‘setas‘ da coordenada da célula que foi alvo da última ação.
 
 ## Problemas conhecidos
-- `valgrind` acusa erros de no processo de construir a lista de jogadas para desfazer.
+- `valgrind` acusa erros no processo de construir a lista de jogadas para desfazer.
 - A verificação de jogo não foi implementada. Não existem, portanto, formas de ganhar ou perder.
 - A interface difere da especificação.
 - A entrada de comandos durante o jogo difere da especificação.
